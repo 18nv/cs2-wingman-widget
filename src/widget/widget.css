@@ -23,19 +23,25 @@ body {
 .top-row {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
 
-/* Steam player avatar */
+/* Round Steam Avatar matching the original style */
 .avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 8px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid;
   object-fit: cover;
   flex-shrink: 0;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
 }
+
+.wm-gray .avatar    { border-color: #9ca3af; }
+.wm-silver .avatar  { border-color: #b0b8c4; }
+.wm-gold .avatar    { border-color: #facc15; }
+.wm-blue .avatar    { border-color: #3b82f6; }
+.wm-purple .avatar  { border-color: #a855f7; }
+.wm-red .avatar     { border-color: #ef4444; }
 
 /* Identity: name + rank row */
 .identity {
@@ -48,7 +54,7 @@ body {
 }
 
 .name {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 800;
   color: #fff;
   white-space: nowrap;

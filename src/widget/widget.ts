@@ -9,13 +9,13 @@ function render(container: HTMLElement, config: WidgetConfig, data: WingmanData)
   const tierKey = wingmanTierKey(data.rankId);
   const recent = data.recentGames.slice(0, config.matchCount);
 
-  // Steam profile picture
+  // Steam round avatar
   let avatarHtml = '';
-  if (config.showAvatar && config.steamId) {
-    avatarHtml = `<img class="avatar" src="https://unavatar.io/steam/${config.steamId}" alt="" onerror="this.style.display='none'">`;
+  if (config.showAvatar && data.avatarUrl) {
+    avatarHtml = `<img class="avatar" src="${data.avatarUrl}" alt="">`;
   }
 
-  // Wingman rank icon ONLY (no text name like Silver I / MG2)
+  // Wingman rank icon ONLY (no text)
   let rankIconHtml = '';
   if (data.rank.icon) {
     rankIconHtml = `<img class="rank-icon" src="${data.rank.icon}" alt="${data.rank.name}" title="${data.rank.name}">`;
@@ -115,7 +115,7 @@ function renderLoading(container: HTMLElement) {
       <div class="top-row">
         <div class="identity">
           <div class="name">Loading...</div>
-          <div class="rank-row"><span class="change neutral">Pobieranie danych...</span></div>
+          <div class="rank-row"><span class="change neutral">—</span></div>
         </div>
       </div>
     </div>`;

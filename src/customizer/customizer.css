@@ -33,7 +33,7 @@ body {
 }
 
 .subtitle {
-  color: #888;
+  color: #666;
   font-size: 14px;
   margin-top: 6px;
 }
@@ -265,15 +265,22 @@ select.input {
   gap: 12px;
 }
 
+/* Round avatar with rank border */
 .wp-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid;
   object-fit: cover;
   flex-shrink: 0;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
+
+.wm-gray .wp-avatar    { border-color: #9ca3af; }
+.wm-silver .wp-avatar  { border-color: #b0b8c4; }
+.wm-gold .wp-avatar    { border-color: #facc15; }
+.wm-blue .wp-avatar    { border-color: #3b82f6; }
+.wm-purple .wp-avatar  { border-color: #a855f7; }
+.wm-red .wp-avatar     { border-color: #ef4444; }
 
 .wp-identity {
   flex: 1;

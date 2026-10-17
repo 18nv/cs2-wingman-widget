@@ -3,15 +3,16 @@ import { getWingmanRank, type WingmanRank } from './ranks';
 
 // Leetify's real, documented Public API (see https://api-public-docs.cs-prod.leetify.com/).
 const API_BASE = 'https://api-public.cs-prod.leetify.com/v3/profile';
-// Match-list endpoint for kills/deaths enrichment.
 const MATCHES_BASE = 'https://api-public.cs-prod.leetify.com/v3/profile/matches';
 const LEETIFY_KEY = import.meta.env.VITE_LEETIFY_KEY as string | undefined;
+const AVATAR_PROXY = import.meta.env.VITE_AVATAR_PROXY_URL as string | undefined;
 
 // rank_type that marks a Wingman match in recent_matches.
 const WINGMAN_RANK_TYPE = 7;
 
 export interface WingmanData {
   name: string;
+  avatarUrl: string;
   /** Current wingman skill group id (1–18, 0 = unranked) */
   rankId: number;
   /** Resolved rank info */
@@ -42,7 +43,12 @@ export async function fetchWingmanData(steamId: string): Promise<WingmanData> {
   const wingmanGames = (data.recent_matches ?? []).filter(
     (m) => m.rank_type === WINGMAN_RANK_TYPE,
   );
-  await enrichWithKills(steamId, wingmanGames, headers);
+
+  // Fetch avatar and kills in parallel
+  const [avatarUrl] = await Promise.all([
+    fetchAvatarUrl(steamId),
+    enrichWithKills(steamId, wingmanGames, headers),
+  ]);
 
   // Current wingman rank from profile (ranks.wingman is the skill group id 1-18)
   const currentRankId = data.ranks.wingman ?? 0;
@@ -62,6 +68,7 @@ export async function fetchWingmanData(steamId: string): Promise<WingmanData> {
 
   return {
     name: data.name,
+    avatarUrl,
     rankId: currentRankId,
     rank: getWingmanRank(currentRankId),
     rankChange,
@@ -70,6 +77,45 @@ export async function fetchWingmanData(steamId: string): Promise<WingmanData> {
     rankDowns,
     aimRating: data.rating.aim,
   };
+}
+
+// Resolves a Steam avatar URL. First checks custom Worker proxy if configured,
+// then falls back to Steam Community XML via public CORS proxy.
+export async function fetchAvatarUrl(steamId: string): Promise<string> {
+  // 1. Check custom Cloudflare Worker proxy if set
+  if (AVATAR_PROXY) {
+    try {
+      const res = await fetch(`${AVATAR_PROXY}?steam64_id=${encodeURIComponent(steamId)}`);
+      if (res.ok) {
+        const body = (await res.json()) as { avatarUrl?: unknown };
+        if (typeof body.avatarUrl === 'string' && body.avatarUrl) return body.avatarUrl;
+      }
+    } catch {
+      // fallback to public proxy
+    }
+  }
+
+  // 2. Fetch directly from Steam Community XML via allorigins CORS proxy
+  try {
+    const steamXml = `https://steamcommunity.com/profiles/${encodeURIComponent(steamId)}/?xml=1`;
+    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(steamXml)}`;
+    const res = await fetch(proxyUrl);
+    if (res.ok) {
+      const body = (await res.json()) as { contents?: string };
+      if (body.contents) {
+        const match = body.contents.match(/<avatarFull><!\[CDATA\[(.*?)\]\]><\/avatarFull>/)
+          || body.contents.match(/<avatarFull>(.*?)<\/avatarFull>/)
+          || body.contents.match(/<avatarMedium><!\[CDATA\[(.*?)\]\]><\/avatarMedium>/);
+        if (match && match[1]) {
+          return match[1];
+        }
+      }
+    }
+  } catch {
+    // leave empty
+  }
+
+  return '';
 }
 
 // Attaches kills/deaths to each match from the match-list endpoint.
