@@ -33,7 +33,7 @@ body {
 }
 
 .subtitle {
-  color: #666;
+  color: #888;
   font-size: 14px;
   margin-top: 6px;
 }
@@ -250,12 +250,13 @@ select.input {
 
 /* Widget preview (inside customizer) */
 .wp {
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.85);
   border-radius: 12px;
   padding: 10px 14px;
   display: inline-flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
 }
 
 .wp-top {
@@ -264,15 +265,24 @@ select.input {
   gap: 12px;
 }
 
-.wp-rank-icon {
+.wp-avatar {
   width: 40px;
   height: 40px;
-  object-fit: contain;
+  border-radius: 8px;
+  object-fit: cover;
   flex-shrink: 0;
-  filter: drop-shadow(0 0 3px rgba(255,255,255,0.15));
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
-.wp-identity { flex: 1; min-width: 0; }
+.wp-identity {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
 
 .wp-name {
   font-size: 13px;
@@ -284,33 +294,31 @@ select.input {
   line-height: 1.2;
 }
 
-.wp-rating-line {
+.wp-rank-row {
   display: flex;
-  align-items: baseline;
-  gap: 5px;
+  align-items: center;
+  gap: 6px;
 }
 
-.wp-rating { font-size: 14px; font-weight: 900; }
+.wp-rank-icon {
+  height: 24px;
+  width: auto;
+  max-width: 50px;
+  object-fit: contain;
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+}
 
-/* Wingman tier colors for customizer preview */
-.wm-gray .wp-rating     { color: #9ca3af; }
-.wm-silver .wp-rating   { color: #b0b8c4; }
-.wm-gold .wp-rating     { color: #facc15; }
-.wm-blue .wp-rating     { color: #60a5fa; }
-.wm-purple .wp-rating   { color: #c084fc; }
-.wm-red .wp-rating      { color: #f87171; }
-
-.wp-change { font-size: 10px; font-weight: 700; }
+.wp-change { font-size: 11px; font-weight: 700; }
 .wp-change.positive { color: #4ade80; }
 .wp-change.negative { color: #f87171; }
-.wp-change.neutral  { color: #64748b; }
+.wp-change.neutral  { color: #94a3b8; }
 
 .wp-rank-movement {
-  display: flex;
-  gap: 6px;
+  display: inline-flex;
+  gap: 4px;
   font-size: 10px;
   font-weight: 700;
-  margin-top: 1px;
 }
 .wp-rank-up { color: #4ade80; }
 .wp-rank-down { color: #f87171; }

@@ -2,7 +2,7 @@
 // GET https://api-public.cs-prod.leetify.com/v3/profile?steam64_id={id}
 export interface LeetifyProfile {
   privacy_mode: string;
-  winrate: number; // fraction, e.g. 0.6429
+  winrate: number;
   total_matches: number;
   first_match_date: string;
   name: string;
@@ -33,9 +33,6 @@ export interface LeetifyMatch {
   id: string;
   data_source: string;
   outcome: 'win' | 'loss' | 'tie';
-  // For Premier matches (rank_type 11), `rank` is the 5-digit CS Rating after the
-  // match. Competitive is rank_type 12, Wingman 7; Faceit matches have rank_type null.
-  // For Wingman (rank_type 7), `rank` is the skill group id (1–18).
   rank: number | null;
   rank_type: number | null;
   map_name: string;
@@ -46,19 +43,12 @@ export interface LeetifyMatch {
   accuracy_enemy_spotted: number;
   accuracy_head: number;
   spray_accuracy: number;
-  // Kills/deaths aren't in the profile payload — they come from the separate
-  // /v2/matches/{id} endpoint and are attached after the fact (see api.ts).
-  // Undefined when that per-match lookup hasn't run or failed.
   kills?: number;
   deaths?: number;
 }
 
-// Kept as an alias so widget.ts's existing rendering code doesn't need renaming.
 export type LeetifyGame = LeetifyMatch;
 
-// Shape of an entry from Leetify's match-list endpoint:
-// GET /v3/profile/matches?steam64_id=... returns an array of these. Only the
-// fields the widget needs — each match's full stats block is much larger.
 export interface LeetifyMatchDetails {
   id: string;
   stats: LeetifyMatchPlayerStats[];
@@ -82,22 +72,22 @@ export interface RankTier {
 
 export interface WidgetConfig {
   steamId: string;
+  showAvatar: boolean;
   showName: boolean;
   showChange: boolean;
   showStats: boolean;
   showMatchHistory: boolean;
-  showRankIcon: boolean;
   matchCount: number;
   refreshInterval: number;
 }
 
 export const DEFAULT_CONFIG: WidgetConfig = {
   steamId: '',
+  showAvatar: true,
   showName: true,
   showChange: true,
   showStats: true,
   showMatchHistory: true,
-  showRankIcon: true,
   matchCount: 5,
   refreshInterval: 60,
 };

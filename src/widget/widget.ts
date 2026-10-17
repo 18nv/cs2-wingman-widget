@@ -9,9 +9,15 @@ function render(container: HTMLElement, config: WidgetConfig, data: WingmanData)
   const tierKey = wingmanTierKey(data.rankId);
   const recent = data.recentGames.slice(0, config.matchCount);
 
-  // Rank icon
+  // Steam profile picture
+  let avatarHtml = '';
+  if (config.showAvatar && config.steamId) {
+    avatarHtml = `<img class="avatar" src="https://unavatar.io/steam/${config.steamId}" alt="" onerror="this.style.display='none'">`;
+  }
+
+  // Wingman rank icon ONLY (no text name like Silver I / MG2)
   let rankIconHtml = '';
-  if (config.showRankIcon && data.rank.icon) {
+  if (data.rank.icon) {
     rankIconHtml = `<img class="rank-icon" src="${data.rank.icon}" alt="${data.rank.name}" title="${data.rank.name}">`;
   }
 
@@ -39,7 +45,7 @@ function render(container: HTMLElement, config: WidgetConfig, data: WingmanData)
     const parts: string[] = [];
     if (data.rankUps > 0) parts.push(`<span class="rank-up">↑${data.rankUps}</span>`);
     if (data.rankDowns > 0) parts.push(`<span class="rank-down">↓${data.rankDowns}</span>`);
-    rankMovementHtml = `<div class="rank-movement">${parts.join(' ')}</div>`;
+    rankMovementHtml = `<span class="rank-movement">${parts.join(' ')}</span>`;
   }
 
   // Stats — K/D ratio, AVG kills, and AIM rating from recent matches
@@ -75,14 +81,14 @@ function render(container: HTMLElement, config: WidgetConfig, data: WingmanData)
   container.innerHTML = `
     <div class="widget wm-${tierKey}">
       <div class="top-row">
-        ${rankIconHtml}
+        ${avatarHtml}
         <div class="identity">
           ${config.showName ? `<div class="name">${data.name}</div>` : ''}
-          <div class="rating-line">
-            <span class="rating">${data.rank.name}</span>
+          <div class="rank-row">
+            ${rankIconHtml}
             ${changeHtml}
+            ${rankMovementHtml}
           </div>
-          ${rankMovementHtml}
         </div>
         ${statsHtml}
       </div>
@@ -97,7 +103,7 @@ function renderError(container: HTMLElement, message: string) {
       <div class="top-row">
         <div class="identity">
           <div class="name">Error</div>
-          <div class="rating-line"><span class="rating">${message}</span></div>
+          <div class="rank-row"><span class="change negative">${message}</span></div>
         </div>
       </div>
     </div>`;
@@ -109,7 +115,7 @@ function renderLoading(container: HTMLElement) {
       <div class="top-row">
         <div class="identity">
           <div class="name">Loading...</div>
-          <div class="rating-line"><span class="rating">—</span></div>
+          <div class="rank-row"><span class="change neutral">Pobieranie danych...</span></div>
         </div>
       </div>
     </div>`;
